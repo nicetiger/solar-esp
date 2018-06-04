@@ -15,3 +15,8 @@ on the server, the python script subscribes to MQTT and feeds the data to a mari
 Data is read from mariadb and visualized with matplotlib
 
 example: <img src="plot.png"/>
+
+### Credits
+
+This project was inspired by the Solar Powered WiFi Weather Station on Instructables:
+http://www.instructables.com/id/Solar-Powered-WiFi-Weather-Station
