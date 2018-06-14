@@ -14,7 +14,7 @@ on the server, the python script subscribes to MQTT and feeds the data to a mari
 
 Data is read from mariadb and visualized with matplotlib
 
-example: <img src="plot.png"/>
+example: <img src="screenshots/plot.png"/>
 
 ### Credits
 
