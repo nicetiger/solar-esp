@@ -45,7 +45,7 @@ void setup()
 {
   Serial.begin(115200);
 
- pinMode(PIN_LED_RED, OUTPUT);
+  pinMode(PIN_LED_RED, OUTPUT);
   pinMode(PIN_LED_BLUE, OUTPUT);
   pinMode(PIN_LED_GREEN, OUTPUT);
   
@@ -152,12 +152,14 @@ void loop()
   Serial.println("INFO: Closing the Wifi connection");
   WiFi.disconnect();
 
-  // this needs D0 - RST
   analogWrite(PIN_LED_RED, 0x0);
   analogWrite(PIN_LED_BLUE, 0x0);
   analogWrite(PIN_LED_RED, 0x0);
 
+  // this needs D0 - RST
   ESP.deepSleep(5*60*1000*1000);
+
+  //never reach this line; reboot after deepSleep 
   delay(1000);
 }
 /*************************************/

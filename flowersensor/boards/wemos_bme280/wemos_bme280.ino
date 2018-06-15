@@ -9,6 +9,8 @@
 // https://github.com/knolleary/pubsubclient Version 2.6.0
 //
 
+#include "config.h"
+
 #include <Seeed_BME280.h>
 #include <WiFiManager.h>
 #include <Wire.h>
@@ -19,10 +21,6 @@ BME280 bme280;
 
 #define LED D4
 
-#define MQTT_SERVER "192.168.?.?"
-#define WIFI_SSID "...."
-#define WIFI_PSK "????"
-
 WiFiClient espClient;
 
 String s="";
@@ -30,6 +28,8 @@ String s="";
 void setup() {
   Serial.begin(74880);
   delay(500);
+
+  pinMode(LED,OUTPUT);
 
   //Manual Wifi
   WiFi.mode(WIFI_STA);
@@ -42,8 +42,6 @@ void setup() {
   }
   WiFi.persistent(true);
 
-  pinMode(LED,OUTPUT);
- 
   Serial.println("setup bme280");
   //hangs without i2c device
   if(!bme280.init()){
@@ -115,5 +113,7 @@ void loop() {
 
   // this needs D0 - RST
   ESP.deepSleep(1000000*60);
+
+  //never reach this line; reboot after deepSleep 
   //delay(1000);
 }
