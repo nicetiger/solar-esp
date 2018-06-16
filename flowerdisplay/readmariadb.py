@@ -41,7 +41,7 @@ def norm_pressure(p,t):
    # Die vom Deutschen Wetterdienst empfohlene Reduktionsformel
    # https://de.wikipedia.org/wiki/Barometrische_H%C3%B6henformel
 
-    h=355 # Hoehe Nuernberg
+    h=settings["station"]["height"] # Hoehe Nuernberg
     
     M=0.02896   # mittlere molare Masse der Atmosphärengase (in kg mol^−1 )
     g=9.807     # die Schwerebeschleunigung (in s^-2)
@@ -59,20 +59,21 @@ df['p2']=df['p']
 #fill new column
 for index, row in df.iterrows():
     row['p2']=norm_pressure(row['p'],row['temp'])
-    
-#df['p'] = df['p'].map(lambda x: x.rstrip('hPa'))
-
 
 print(df)
+
 
 #df.plot(x='date',y='temp')
 #df.plot(x='date',y='hum')
 #df.plot(x='date',y='analog')
-ax=df.plot(y=['p','p2','analog','temp','hum'],secondary_y=['p','p2'],figsize=[5,3])
+print("plot1")
+ax=df.plot(y=['p','p2','analog','temp','hum'],secondary_y=['p','p2'],figsize=[8,5])
 ax.set_xlim(pd.Timestamp.now()- pd.Timedelta(days=1), pd.Timestamp.now())
-ax=df.plot(y=['p','p2','analog','temp','hum'],secondary_y=['p','p2'],figsize=[5,3])
+print("plot2")
+ax=df.plot(y=['p','p2','analog','temp','hum'],secondary_y=['p','p2'],figsize=[8,5])
 ax.set_xlim(pd.Timestamp.now()- pd.Timedelta(days=7), pd.Timestamp.now())
-
+print("closing")
 cursor.close()
 conn.close()
-                            
+print("done.")
+              
