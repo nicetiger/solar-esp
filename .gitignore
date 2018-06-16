@@ -1,2 +1,3 @@
 
 flowersensor/boards/wemos_bme280/config.h
+flowerdisplay/settings.json
