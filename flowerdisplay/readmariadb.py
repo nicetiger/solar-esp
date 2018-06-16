@@ -7,13 +7,19 @@ Created on Sun Jun  3 19:44:49 2018
 import pymysql.cursors
 import pandas as pd
 import matplotlib.pyplot as plt
+import json
 
-conn = pymysql.connect(host='192.168.?.?',
-                             port=3307,
-                             user='TBD',
-                             password=None,
-                             db='mysql',
-                             charset='utf8mb4')
+with open('settings.json') as json_data_file:
+    settings = json.load(json_data_file)
+print(settings)
+
+conn = pymysql.connect(
+        host=settings["mysql"]["host"],
+        port=settings["mysql"]["port"],
+        user=settings["mysql"]["user"],
+        password=settings["mysql"]["password"],
+        db=settings["mysql"]["database"],
+        charset='utf8mb4')
 cursor = conn.cursor()
 
 df = pd.read_sql("SELECT * FROM data", conn)
