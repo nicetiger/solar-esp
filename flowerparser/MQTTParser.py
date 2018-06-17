@@ -18,12 +18,15 @@ cursor = db.cursor()
 #cursor.execute("DROP TABLE data;")
 #db.commit()
 
-cursor.execute("CREATE TABLE IF NOT EXISTS data(date CHAR(20) UNIQUE, \
-                                                temp     VARCHAR(20), \
-                                                pressure VARCHAR(20), \
-                                                altitude VARCHAR(20), \
-                                                humidity VARCHAR(20), \
-                                                analog   VARCHAR(20));")
+cursor.execute("CREATE TABLE IF NOT EXISTS data (sensorId INTEGER UNSIGNED, \
+                                                 date       DATETIME, \
+                                                 temp       FLOAT, \
+                                                 pressure   FLOAT, \
+                                                 altitude   FLOAT, \
+                                                 humidity   FLOAT, \
+                                                 analog     FLOAT, \
+                                                 brightness FLOAT, \
+                                                 PRIMARY KEY (sensorId,date));")
 db.commit()
 
 def on_connect(client, userdata, flags, rc):
@@ -31,30 +34,37 @@ def on_connect(client, userdata, flags, rc):
         client.subscribe("sensor/#")
 
 def on_message(client, userdata, msg):
-        print(msg.topic + " " + str(msg.payload))
         aMsg=msg.topic.split("/")
         sTopic=aMsg[0]
-        iSensorId=aMsg[1]
+        iSensorId=int(aMsg[1])
         sParameter=aMsg[2]
 
-        now=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S");
+        now=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         try:
-            cursor.execute("INSERT IGNORE INTO data(date) VALUES('%s');" % now)
+            cursor.execute("INSERT IGNORE INTO data(sensorId, date) VALUES('%d','%s');" % (iSensorId, now))
             if sParameter == "Temp":
-                cursor.execute("UPDATE data set temp = '%s' where date = '%s';" % (msg.payload.decode('UTF-8'),now))
+                print(msg.topic + " " + str(msg.payload))
+                cursor.execute("UPDATE data set temp = %f       WHERE sensorId = '%d' AND date = '%s';" % (float(msg.payload.decode('UTF-8').rstrip("C")), iSensorId, now))
             if sParameter == "Pressure":
-                cursor.execute("UPDATE data set pressure = '%s' where date = '%s';" % (msg.payload.decode('UTF-8'),now))
+                print(msg.topic + " " + str(msg.payload))
+                cursor.execute("UPDATE data set pressure = %f   WHERE sensorId = '%d' AND date = '%s';" % (float(msg.payload.decode('UTF-8').rstrip("hPa")), iSensorId, now))
             if sParameter == "Altitude":
-                cursor.execute("UPDATE data set altitude = '%s' where date = '%s';" % (msg.payload.decode('UTF-8'),now))
+                print(msg.topic + " " + str(msg.payload))
+                cursor.execute("UPDATE data set altitude = %f   WHERE sensorId = '%d' AND date = '%s';" % (float(msg.payload.decode('UTF-8').rstrip("m")), iSensorId, now))
             if sParameter == "Humidity":
-                cursor.execute("UPDATE data set humidity = '%s' where date = '%s';" % (msg.payload.decode('UTF-8'),now))
+                print(msg.topic + " " + str(msg.payload))
+                cursor.execute("UPDATE data set humidity = %f   WHERE sensorId = '%d' AND date = '%s';" % (float(msg.payload.decode('UTF-8').rstrip("%")), iSensorId, now))
             if sParameter == "Analog":
-                cursor.execute("UPDATE data set analog = '%s' where date = '%s';" % (msg.payload.decode('UTF-8'),now))
+                print(msg.topic + " " + str(msg.payload))
+                cursor.execute("UPDATE data set analog = %f     WHERE sensorId = '%d' AND date = '%s';" % (float(msg.payload.decode('UTF-8').rstrip("mV")), iSensorId, now))
+            if sParameter == "Brightness":
+                print(msg.topic + " " + str(msg.payload))
+                cursor.execute("UPDATE data set brightness = %f WHERE sensorId = '%d' AND date = '%s';" % (float(msg.payload.decode('UTF-8').rstrip("cd")), iSensorId, now))
         except (IntegrityError)  as e:
             print('sqlite error: ', e.args[0])
         db.commit()
 
-cursor.execute("SELECT * FROM data;")
+cursor.execute("SELECT * FROM data ORDER BY date,sensorId;")
 
 rows = cursor.fetchall()
 
