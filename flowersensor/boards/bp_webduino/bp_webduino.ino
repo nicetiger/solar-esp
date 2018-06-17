@@ -80,10 +80,15 @@ void sendSensorToMqtt(unsigned uSensorId, struct MeasurementPoint &mp)
   String s;
 
   mqttFullClient.publish(s+"sensor/"+uSensorId+"/Temp",       s+mp.uTemperature+"C");
+  yield();
   mqttFullClient.publish(s+"sensor/"+uSensorId+"/Pressure",   s+"0hPa");
+  yield();
   mqttFullClient.publish(s+"sensor/"+uSensorId+"/Altitude",   s+"0m");
+  yield();
   mqttFullClient.publish(s+"sensor/"+uSensorId+"/Humidity",   s+mp.uHumidity+"%");
+  yield();
   mqttFullClient.publish(s+"sensor/"+uSensorId+"/Brightness", s+"0cd");
+  yield();
   mqttFullClient.publish(s+"sensor/"+uSensorId+"/Analog",     s+mp.uBatteryVoltage+"mV");
   yield();
 }
