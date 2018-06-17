@@ -1,0 +1,2 @@
+CREATE DATABASE flowers;
+GRANT ALL PRIVILEGES ON flowers.* TO 'flowers'@'localhost';
