@@ -19,9 +19,11 @@
 #define PIN_LED_GREEN  12
 #define PIN_LED_WAKEUP 16
 
+#define NUM_SENSORS    4
+#define DEV_SENSOR_OFFSET 4
+
 ADC_MODE(ADC_VCC);
 
-#define NUM_SENSORS    4
 
 WiFiClient espClient;
 WiFiEventHandler stationConnectedHandler;
@@ -90,7 +92,7 @@ void sendSensorToMqtt(unsigned uSensorId, struct MeasurementPoint &mp)
   mqttFullClient.publish(s+"sensor/"+uSensorId+"/Brightness", s+"0cd");
   yield();
   mqttFullClient.publish(s+"sensor/"+uSensorId+"/Analog",     s+mp.uBatteryVoltage+"mV");
-  yield();
+  delay(150); /*Wait for buffers to be flushed*/
 }
 
 void loop()
@@ -151,7 +153,7 @@ void loop()
       Serial.println("Sending data");
       for(uint8_t uX=0; uX<NUM_SENSORS ;++uX)
       {
-          sendSensorToMqtt(uX, measSensors[uX]);
+          sendSensorToMqtt(DEV_SENSOR_OFFSET + uX, measSensors[uX]);
       }
     }
     else
