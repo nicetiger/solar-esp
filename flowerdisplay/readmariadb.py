@@ -7,6 +7,8 @@ Created on Sun Jun  3 19:44:49 2018
 import pymysql.cursors
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import matplotlib.ticker as mticker
 import json
 import math
 
@@ -68,10 +70,46 @@ print(df)
 #df.plot(x='date',y='analog')
 print("plot1")
 ax=df.plot(y=['p','p2','analog','temp','hum'],secondary_y=['p','p2'],figsize=[8,5])
-ax.set_xlim(pd.Timestamp.now()- pd.Timedelta(days=1), pd.Timestamp.now())
+dStart=pd.Timestamp.now()- pd.Timedelta(days=1)
+dEnd=pd.Timestamp.now()
+ax.set_xlim(dStart, dEnd)
+ax.xaxis.set_major_locator(mdates.HourLocator(byhour=range(0,24,24)))
+ax.xaxis.set_minor_locator(mdates.HourLocator(byhour=range(0,24,2)))
+ax.xaxis.set_major_formatter(mdates.DateFormatter('%b-%d'))
+ax.xaxis.set_minor_formatter(mdates.DateFormatter('%H-%M'))
+ax.xaxis.set_tick_params(which='minor', bottom = 'on')
+ax.xaxis.grid(True, which='minor', linestyle='-', linewidth=0.25)
+ax.xaxis.grid(True, which='major', linestyle='-', linewidth=1)
+for tick in ax.get_xaxis().get_major_ticks():
+    tick.set_pad(10)
+ax.yaxis.set_minor_locator(mticker.AutoMinorLocator(2))
+ax.yaxis.set_tick_params(which='minor', left = 'on')
+ax.yaxis.grid(True, which='minor', linestyle='-', linewidth=0.25)
+ax.yaxis.grid(True, which='major', linestyle='-', linewidth=1)
+
 print("plot2")
 ax=df.plot(y=['p','p2','analog','temp','hum'],secondary_y=['p','p2'],figsize=[8,5])
-ax.set_xlim(pd.Timestamp.now()- pd.Timedelta(days=7), pd.Timestamp.now())
+dStart=pd.Timestamp.now()- pd.Timedelta(days=7)
+dEnd=pd.Timestamp.now()
+ax.set_xlim(dStart, dEnd)
+ax.xaxis.set_major_locator(mdates.DayLocator(interval=1))
+ax.xaxis.set_minor_locator(mdates.HourLocator(byhour=range(0,24,6)))
+ax.xaxis.set_major_formatter(mdates.DateFormatter('%b-%d'))
+ax.xaxis.set_minor_formatter(mdates.DateFormatter('%H'))
+ax.xaxis.set_tick_params(which='minor', bottom = 'on')
+ax.xaxis.grid(True, which='minor', linestyle='-', linewidth=0.25)
+ax.xaxis.grid(True, which='major', linestyle='-', linewidth=1)
+for tick in ax.get_xaxis().get_major_ticks():
+    tick.set_pad(10)
+ax.yaxis.set_minor_locator(mticker.AutoMinorLocator(2))
+ax.yaxis.set_tick_params(which='minor', left = 'on')
+ax.yaxis.grid(True, which='minor', linestyle='-', linewidth=0.25)
+ax.yaxis.grid(True, which='major', linestyle='-', linewidth=1)
+
+
+
+
+
 print("closing")
 cursor.close()
 conn.close()
