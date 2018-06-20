@@ -19,9 +19,11 @@
 #define PIN_LED_GREEN  12
 #define PIN_LED_WAKEUP 16
 
+#define NUM_SENSORS    4
+#define DEV_SENSOR_OFFSET 4
+
 ADC_MODE(ADC_VCC);
 
-#define NUM_SENSORS    4
 
 WiFiClient espClient;
 WiFiEventHandler stationConnectedHandler;
@@ -79,14 +81,18 @@ void sendSensorToMqtt(unsigned uSensorId, struct MeasurementPoint &mp)
 {
   String s;
 
-  mqttFullClient.publish("test/Sensor",     s+uSensorId);
-  mqttFullClient.publish("test/Temp",       s+mp.uTemperature+"C");
-  mqttFullClient.publish("test/Pressure",   s+"0hPa");
-  mqttFullClient.publish("test/Altitute",   s+"0m");
-  mqttFullClient.publish("test/Humidity",   s+mp.uHumidity+"%");
-  mqttFullClient.publish("test/Brightness", s+"0cd");
-  mqttFullClient.publish("test/Analog",     s+mp.uBatteryVoltage+"V");
+  mqttFullClient.publish(s+"sensor/"+uSensorId+"/Temp",       s+mp.uTemperature+"C");
   yield();
+  mqttFullClient.publish(s+"sensor/"+uSensorId+"/Pressure",   s+"0hPa");
+  yield();
+  mqttFullClient.publish(s+"sensor/"+uSensorId+"/Altitude",   s+"0m");
+  yield();
+  mqttFullClient.publish(s+"sensor/"+uSensorId+"/Humidity",   s+mp.uHumidity+"%");
+  yield();
+  mqttFullClient.publish(s+"sensor/"+uSensorId+"/Brightness", s+"0cd");
+  yield();
+  mqttFullClient.publish(s+"sensor/"+uSensorId+"/Analog",     s+mp.uBatteryVoltage+"mV");
+  delay(150); /*Wait for buffers to be flushed*/
 }
 
 void loop()
@@ -138,12 +144,21 @@ void loop()
     delay(500);
   }
 
-  if (WiFi.status() == WL_CONNECTED &&  msqttThinClient.connected())
+  if (WiFi.status() == WL_CONNECTED)
   {
-    Serial.println("Sending data");
-    for(uint8_t uX=0; uX<NUM_SENSORS ;++uX)
+    Serial.print(s+"Connecting to MQTT: "+MQTT_SERVER+" ... ");
+    if (msqttThinClient.connect("ESP8266Client"))
     {
-        sendSensorToMqtt(uX, measSensors[uX]);
+      Serial.println("connected");
+      Serial.println("Sending data");
+      for(uint8_t uX=0; uX<NUM_SENSORS ;++uX)
+      {
+          sendSensorToMqtt(DEV_SENSOR_OFFSET + uX, measSensors[uX]);
+      }
+    }
+    else
+    {
+      Serial.println(s+"failed, rc="+msqttThinClient.state());
     }
   }
   
@@ -178,8 +193,6 @@ void onStationDisconnected(const WiFiEventStationModeDisconnected& evt)
   digitalWrite(PIN_LED_GREEN, LOW);
   analogWrite(PIN_LED_RED, 0x01);
   analogWrite(PIN_LED_GREEN, 0x0);
-  
-  msqttThinClient.disconnect();
 }
 
 void onStationModeGotIP(const WiFiEventStationModeGotIP& evt)
@@ -188,14 +201,4 @@ void onStationModeGotIP(const WiFiEventStationModeGotIP& evt)
   
   Serial.println("Got an IP.");
   analogWrite(PIN_LED_GREEN, 0x02);
-  
-  Serial.print(s+"Connecting to MQTT: "+MQTT_SERVER+" ... ");
-  if (msqttThinClient.connect("ESP8266Client"))
-  {
-    Serial.println("connected");
-  }
-  else
-  {
-    Serial.println(s+"failed, rc="+msqttThinClient.state());
-  }
 }
