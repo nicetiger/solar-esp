@@ -30,7 +30,7 @@ conn1 = pymysql.connect(
         port=settings["mysql"]["port"],
         user=settings["mysql"]["user"],
         password=settings["mysql"]["password"],
-        db=settings["mysql"]["database"],
+        db="mysql",
         charset='utf8mb4')
 cursor1 = conn1.cursor()
 
@@ -45,7 +45,7 @@ conn2 = pymysql.connect(
         port=settings["mysql"]["port"],
         user=settings["mysql"]["user"],
         password=settings["mysql"]["password"],
-        db="sensors",
+        db=settings["mysql"]["database"],
         charset='utf8mb4')
 cursor2 = conn2.cursor()
 

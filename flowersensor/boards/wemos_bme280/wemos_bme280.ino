@@ -82,11 +82,11 @@ void writeToMqtt(float temp,float p,float altitude,float humidity,float analog)
       Serial.println(s+"failed, rc="+client.state());
     }
   }
-  mqtt.publish("test/Temp", s+temp+"C");
-  mqtt.publish("test/Pressure", s+p+"hPa");
-  mqtt.publish("test/Altitute", s+altitude+"m");
-  mqtt.publish("test/Humidity", s+humidity+"%");
-  mqtt.publish("test/Analog", s+analog+"V");
+  mqtt.publish(s+"sensor/"+SENSOR_ID+"/Temp", s+temp);
+  mqtt.publish(s+"sensor/"+SENSOR_ID+"/Pressure", s+p);
+  mqtt.publish(s+"sensor/"+SENSOR_ID+"/Altitute", s+altitude);
+  mqtt.publish(s+"sensor/"+SENSOR_ID+"/Humidity", s+humidity);
+  mqtt.publish(s+"sensor/"+SENSOR_ID+"/Voltage", s+analog);
   delay(100);
   client.disconnect();
 }
