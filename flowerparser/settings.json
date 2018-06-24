@@ -5,8 +5,5 @@
         "user":"?",
         "password":"?",
         "database":"mysql"
-    },
-    "station":{
-        "height":355
     }
 }
