@@ -1,0 +1,12 @@
+{
+    "mysql":{
+        "host":"192.168.?.?",
+        "port":3307,
+        "user":"?",
+        "password":"?",
+        "database":"mysql"
+    },
+    "station":{
+        "height":355
+    }
+}
