@@ -6,7 +6,7 @@ Created on Sun Jun  3 19:44:49 2018
 """
 import paho.mqtt.client as mqtt
 import pymysql
-from pymysql.err import IntegrityError,ProgrammingError
+from pymysql.err import IntegrityError,ProgrammingError,InternalError
 import datetime
 import json
 
@@ -17,6 +17,8 @@ import json
 
 listSensorGroups = [[0,1,2,3],[4,5,6,7]]                  #Defines which sensors are attached to the same ESP
 dtConsiderConnectedSeconds=datetime.timedelta(seconds=10) #Defines the maximum time between messages before considering it a new update
+
+print ("MQTTParser starts")
 
 with open('settings.json') as json_data_file:
     settings = json.load(json_data_file)
@@ -101,9 +103,11 @@ def on_message(client, userdata, msg):
                 print(msg.topic + " " + str(msg.payload))
                 cursor.execute("UPDATE data set brightness = %f WHERE sensorId = '%d' AND date = '%s';" % (float(msg.payload.decode('UTF-8').rstrip("cd")), iSensorId, now))
         except (IntegrityError)  as e:
-            print('sqlite error: ', e.args[0])
+            print('sql error: ', e.args[0])
         except (ValueError) as e:
             print('Failed to parse: ', e.args[0])
+        except (InternalError) as e:
+            print('sql error: ', e.args[0])
         conn.commit()
 
 cursor.execute("SELECT date,UNIX_TIMESTAMP(date) AS udate,temp,pressure,humidity,voltage,brightness FROM data ORDER BY udate DESC,sensorId limit 10;")
