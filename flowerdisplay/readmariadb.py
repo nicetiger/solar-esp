@@ -4,6 +4,9 @@ Created on Sun Jun  3 19:44:49 2018
 
 @author: Stefan Michel
 """
+
+#Review example.
+
 import pymysql.cursors
 import pandas as pd
 import matplotlib.pyplot as plt
