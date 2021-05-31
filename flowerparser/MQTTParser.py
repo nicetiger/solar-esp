@@ -4,6 +4,10 @@ Created on Sun Jun  3 19:44:49 2018
 
 @author: Stefan Michel, Phil
 """
+
+#I'm Doing a review here!
+
+
 import paho.mqtt.client as mqtt
 import pymysql
 from pymysql.err import IntegrityError,ProgrammingError
